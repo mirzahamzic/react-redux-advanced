@@ -6,6 +6,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { uiActions } from "./store/ui-slice";
 import Notification from "./components/UI/Notification";
 
+let isInitial = true;
+
 function App() {
   const dispatch = useDispatch();
   const showCart = useSelector((state) => state.ui.cartIsVisible);
@@ -21,13 +23,14 @@ function App() {
           message: "Sending cart data!",
         })
       );
-      const response = fetch(
+      const response = await fetch(
         "https://react-http-2e2fd-default-rtdb.firebaseio.com/cart.json",
         {
           method: "PUT",
           body: JSON.stringify(cart),
         }
       );
+      console.log(response);
       if (!response.ok) {
         throw new Error("Sending cart data failed");
       }
@@ -40,6 +43,11 @@ function App() {
         })
       );
     };
+
+    if (isInitial) {
+      isInitial = false;
+      return;
+    }
 
     sendCartData().catch((error) => {
       console.log(error);
